@@ -1,0 +1,39 @@
+# Virtual Machine and Appliance Disks
+*.ova
+*.vmdk
+*.vdi
+*.box
+.vagrant/
+release/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# Build artifacts
+build/
+bin/
+obj/
+*.o
+*.a
+*.exe
+
+# System & Editor files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# Local logs & traces
+*.har
+*.log
+repo_remote/
+.agents/

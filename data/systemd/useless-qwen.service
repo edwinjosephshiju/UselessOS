@@ -1,0 +1,27 @@
+[Unit]
+Description=UselessOS Qwen 3.5 0.8B Cognitive Inference Daemon
+Documentation=https://github.com/ggml-org/llama.cpp
+After=network.target
+
+[Service]
+Type=simple
+Environment="MODEL_PATH=/opt/uselessos/models/Qwen3.5-0.8B-Q4_K_M.gguf"
+Environment="LLAMA_PORT=8080"
+Environment="LLAMA_THREADS=2"
+Environment="LLAMA_CTX=1024"
+ExecStart=/usr/local/bin/llama-server \
+    --model ${MODEL_PATH} \
+    --port ${LLAMA_PORT} \
+    --host 127.0.0.1 \
+    --ctx-size ${LLAMA_CTX} \
+    --threads ${LLAMA_THREADS} \
+    --n-predict 256 \
+    --mlock false \
+    --mmap true
+Restart=on-failure
+RestartSec=3s
+CPUQuota=150%
+MemoryMax=1200M
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=UselessOS Shell
+GenericName=Desktop Shell
+Comment=Native Neobrutalist Desktop Shell for UselessOS
+Exec=/usr/local/bin/uselessos-shell
+Icon=preferences-desktop
+Terminal=false
+Categories=System;Core;
+X-KDE-Wayland-Interfaces=org_kde_plasma_window_management;
+StartupNotify=false
+NoDisplay=true
