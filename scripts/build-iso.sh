@@ -132,15 +132,41 @@ cp "$ROOTFS"/boot/initrd.img-* "$CD_DIR/live/initrd.img"
 mksquashfs "$ROOTFS" "$CD_DIR/live/filesystem.squashfs" -comp xz -e boot
 
 # Setup ISOLINUX for Legacy BIOS boot
-cp /usr/lib/ISOLINUX/isolinux.bin "$CD_DIR/isolinux/" 2>/dev/null || cp /usr/lib/syslinux/modules/bios/isolinux.bin "$CD_DIR/isolinux/" 2>/dev/null || true
-for mod in ldlinux.c32 vesamenu.c32 libcom32.c32 libutil.c32; do
-    find /usr/lib/ -name "$mod" -exec cp {} "$CD_DIR/isolinux/" \; 2>/dev/null || true
+ISOLINUX_BIN=""
+for p in /usr/lib/ISOLINUX/isolinux.bin /usr/lib/syslinux/modules/bios/isolinux.bin /usr/lib/syslinux/isolinux.bin; do
+    if [ -f "$p" ]; then
+        ISOLINUX_BIN="$p"
+        break
+    fi
 done
 
+if [ -n "$ISOLINUX_BIN" ]; then
+    cp "$ISOLINUX_BIN" "$CD_DIR/isolinux/isolinux.bin"
+fi
+
+BIOS_MOD_DIR=""
+for d in /usr/lib/syslinux/modules/bios /usr/lib/syslinux /usr/lib/ISOLINUX; do
+    if [ -d "$d" ] && [ -f "$d/ldlinux.c32" ]; then
+        BIOS_MOD_DIR="$d"
+        break
+    fi
+done
+
+if [ -n "$BIOS_MOD_DIR" ]; then
+    for mod in ldlinux.c32 menu.c32 libutil.c32 libcom32.c32; do
+        if [ -f "$BIOS_MOD_DIR/$mod" ]; then
+            cp "$BIOS_MOD_DIR/$mod" "$CD_DIR/isolinux/"
+        fi
+    done
+fi
+
 cat > "$CD_DIR/isolinux/isolinux.cfg" <<EOF
-UI vesamenu.c32
+DEFAULT uselessos
 PROMPT 0
-TIMEOUT 50
+TIMEOUT 30
+
+UI menu.c32
+
 MENU TITLE UselessOS 3.0 Live Boot Menu
 
 LABEL uselessos
