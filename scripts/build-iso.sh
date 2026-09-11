@@ -197,9 +197,12 @@ done
 
 XORRISO_ARGS=(
     -as mkisofs
+    -r
+    -V "USELESSOS"
+    -J -joliet-long
+    -l
     -iso-level 3
-    -full-iso-9660-filenames
-    -volid "USELESSOS"
+    -partition_offset 16
     -eltorito-boot isolinux/isolinux.bin
     -eltorito-catalog isolinux/boot.cat
     -no-emul-boot -boot-load-size 4 -boot-info-table
