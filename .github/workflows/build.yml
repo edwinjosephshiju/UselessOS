@@ -1,0 +1,128 @@
+name: Build UselessOS OVA & Live ISO
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      build_iso:
+        description: 'Build bootable Live ISO'
+        required: true
+        type: boolean
+        default: true
+      build_ova:
+        description: 'Build VirtualBox OVA appliance'
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  build-iso:
+    name: Build Live ISO
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.build_iso }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Build Dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            debootstrap \
+            squashfs-tools \
+            xorriso \
+            isolinux \
+            syslinux-common \
+            grub-pc-bin \
+            grub-efi-amd64-bin \
+            mtools \
+            dosfstools
+
+      - name: Build Bootable Live ISO
+        run: |
+          sudo chmod +x scripts/*.sh
+          sudo bash scripts/build-iso.sh
+
+      - name: Upload Live ISO Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: UselessOS-Live-ISO
+          path: |
+            build/UselessOS-3.0-amd64.iso
+            build/UselessOS-3.0-amd64.iso.sha256
+          if-no-files-found: error
+          retention-days: 14
+
+  build-ova:
+    name: Build VirtualBox OVA Appliance
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.build_ova }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Build Dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            qemu-utils \
+            debootstrap \
+            parted \
+            e2fsprogs \
+            dosfstools \
+            grub-pc
+
+      - name: Build Virtual Appliance (OVA)
+        run: |
+          sudo chmod +x scripts/*.sh
+          sudo bash scripts/build-ova.sh
+
+      - name: Upload OVA Appliance Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: UselessOS-OVA-Appliance
+          path: |
+            release/UselessOS.ova
+            release/UselessOS.ova.sha256
+          if-no-files-found: error
+          retention-days: 14
+
+  release:
+    name: Publish Release Assets
+    needs: [build-iso, build-ova]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download ISO Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: UselessOS-Live-ISO
+          path: release-assets/
+
+      - name: Download OVA Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: UselessOS-OVA-Appliance
+          path: release-assets/
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release-assets/*
+          generate_release_notes: true
+          draft: false
+          prerelease: false

@@ -37,9 +37,15 @@ For Software:
 
 # Installation
 
+Download the pre-built VirtualBox OVA appliance (UselessOS.ova) or bootable hybrid Live ISO (UselessOS-3.0-amd64.iso) from GitHub Releases or GitHub Actions build artifacts.
+
 To install and import UselessOS on Windows:
 ```cmd
 INSTALL-UselessOS.bat
+```
+Or build the bootable Live ISO directly on Linux:
+```bash
+sudo bash scripts/build-iso.sh
 ```
 Or build and provision from source using Vagrant:
 ```bash

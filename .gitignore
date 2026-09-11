@@ -1,5 +1,6 @@
 # Virtual Machine and Appliance Disks
 *.ova
+*.iso
 *.vmdk
 *.vdi
 *.box
