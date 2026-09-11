@@ -127,6 +127,8 @@ N/A - UselessOS is a software-based virtual operating system appliance.
 <video src="docs/screenshots/useless_demo.mp4" width="100%" controls>
   Your browser does not support the video tag.
 </video>
+
+[Watch Demo Video (useless_demo.mp4)](docs/screenshots/useless_demo.mp4)
 *Walkthrough demonstrating the boot sequence, desktop interaction, Control Center, and launching useless applications.*
 
 # Additional Demos
